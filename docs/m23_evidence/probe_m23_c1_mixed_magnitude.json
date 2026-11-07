@@ -1,0 +1,175 @@
+{
+  "procedure": "m23-forward-physics-correction-v1",
+  "increment": "M23 C1 final closure of the mixed-magnitude percentage-RMS defect in nix_ert.core.numerics.percent_rms",
+  "scanned": "2026-09-16",
+  "measurement_note": "Every 'corrected_value' below is a fresh measurement of THIS revision. Every 'independent_reference_value' is a 60-significant-digit decimal evaluation of sqrt(mean(((predicted/observed) - 1)**2)) * 100 from the same result vectors, so it shares no arithmetic with the implementation under test.",
+
+  "defect": {
+    "reproduction_helper": "python -X utf8 -c \"from nix_ert.core.numerics import percent_rms; print(percent_rms([1e160, 1e-200], [1.0, 1e200]))\"",
+    "reproduction_public_api": "python -X utf8 -c \"from dataclasses import replace; from nix_ert.ert.inversion2d import invert_ert; from nix_ert.qualification.datasets import ert2d_qualification; f = ert2d_qualification(); u = [o for o in f.observations if not o.excluded][:2]; obs = [replace(o, apparent_resistivity=v) for o, v in zip(u, (1e-230, 1e308))]; print(invert_ert(obs, f.mesh, 1e-60, max_iterations=1).rms_percent)\"",
+    "pre_fix_behaviour": {
+      "helper": "ValueError: math domain error",
+      "public_api": "the first recorded objective raised ValueError: math domain error instead of reporting ~7.071067811865475e171"
+    },
+    "root_cause": "The M23 C1 scaled branch selected the scale as max(abs(log10(predicted/observed))) instead of the largest residual magnitude. For [1e160, 1e-200] / [1.0, 1e200] the minute ratio gives an exponent of about -400, so the shared factor 10 ** -scale underflowed to 0.0; the dominant term (10 ** (160 - 400)) ** 2 = 1e-480 also underflowed, the mean came out exactly 0.0, and log10(0) raised ValueError. A mathematically finite and float-representable RMS percentage was therefore rejected.",
+    "expected_value": {
+      "helper_case": "100 * (1e160 - 1) / sqrt(2) ~ 7.071067811865475e161",
+      "public_api_case_initial_evaluation": "100 * (1e170 - 1) / sqrt(2) ~ 7.071067811865475e171, because the 2D forward response of a homogeneous model is exactly the model resistivity"
+    }
+  },
+
+  "correction": {
+    "location": "nix_ert/core/numerics.py",
+    "algorithm": "The scaled branch now forms the residual magnitudes r_i = |predicted_i / observed_i - 1| directly (a division that underflows to zero yields the exactly correct residual 1, and one that overflows to inf flags a magnitude beyond double precision), selects s = max_i r_i, and evaluates 100 * s * sqrt(mean((r_i / s) ** 2)). Every r_i / s lies in [0, 1], so its square cannot overflow, and each residual contributes its own (r_i / s) ** 2 share instead of being annihilated by another residual's scale. Only when s itself overflows is a log10 form used, since the scale is then unrepresentable.",
+    "why_tiny_residuals_cannot_erase_dominant_ones": "the scale is the largest residual magnitude itself, so the largest term is exactly 1.0 and the remaining terms are scaled relative to it; a residual that is hundreds of orders of magnitude smaller contributes its true (r_i / s) ** 2, which is necessarily negligible against the dominant term but is never able to zero it out.",
+    "overflow_underflow_handling": "no intermediate can overflow (every squared ratio is <= 1); the final product 100 * s * sqrt(mean) is formed directly and returns inf only where the exact value genuinely exceeds float_max; log10 and expm1/log1p are confined to the branch where s overflows.",
+    "ordinary_range": "the conventional expression is still used whenever every relative residual is at most sqrt(float_max / n) / 2, so ordinary and recorded values stay bit-identical (re-verified by the M22 regeneration below)."
+  },
+
+  "corrected_measurements": {
+    "helper_mixed_magnitude": [
+      {
+        "predicted": [1e160, 1e-200],
+        "observed": [1.0, 1e200],
+        "corrected_value": 7.071067811865476e161,
+        "independent_reference_value": 7.071067811865476e161,
+        "relative_error": 1.0691335120706575e-16
+      },
+      {
+        "predicted": [1e150, 1e-200],
+        "observed": [1.0, 1e150],
+        "note": "one dominant residual plus a residual ~500 orders of magnitude smaller",
+        "corrected_value": 7.071067811865475e151,
+        "independent_reference_value": 7.071067811865476e151,
+        "relative_error": 3.450800503024375e-17
+      },
+      {
+        "predicted": [1e200, 1e-100, 1e-250],
+        "observed": [1.0, 1e100, 1e150],
+        "note": "huge, ordinary and minute residuals in one study",
+        "corrected_value": 5.773502691896258e201,
+        "independent_reference_value": 5.773502691896258e201,
+        "relative_error": 6.147195751603846e-17
+      },
+      {
+        "predicted": [1e200, 1e120],
+        "observed": [1.0, 1.0],
+        "note": "two distinct large magnitudes: the smaller must not erase the larger",
+        "corrected_value": 7.071067811865475e201,
+        "independent_reference_value": 7.071067811865475e201,
+        "relative_error": 3.450800503024375e-17
+      }
+    ],
+    "public_api_2d_initial_1e-60_alternating_observations": {
+      "domain": "2D ERT, public invert_ert, accepted finite initial model 1e-60 ohm-m, two observations 1e-230 and 1e308",
+      "forward_predictions_finite_and_positive": true,
+      "final_rms_percent": 1.127295944409448e172,
+      "final_independent_reference_value": 1.1272959444094478e172,
+      "final_relative_error": 1.743323781718491e-16,
+      "initial_evaluation_rms_percent": 7.07106781186547e171,
+      "initial_evaluation_independent_reference_value": 7.071067811865475e171,
+      "initial_evaluation_relative_error": 7.416147862167913e-16
+    },
+    "re_measured_cases_from_the_previous_increment": {
+      "note": "The previous closure record (docs/m23_evidence/probe_m23_closure.json) measured these with the superseded log10-ratio algorithm; its corrected_value and relative_error fields are superseded by the values below. rms_log10 is unchanged in every case, confirming the objective and the optimizer were not touched.",
+      "2d_initial_1e160": {
+        "previous_corrected_value": 2.1579671983284469e161,
+        "previous_relative_error": 4.5683897440035795e-14,
+        "corrected_value": 2.1579671983285458e161,
+        "independent_reference_value": 2.1579671983285455e161,
+        "relative_error": 1.4627091312686424e-16,
+        "rms_log10_unchanged": 159.33052384222248
+      },
+      "2d_initial_1e300": {
+        "previous_corrected_value": 2.1579671983287294e301,
+        "previous_relative_error": 8.552792923034788e-14,
+        "corrected_value": 2.1579671983285447e301,
+        "independent_reference_value": 2.1579671983285447e301,
+        "relative_error": 6.187961524510239e-17,
+        "rms_log10_unchanged": 299.33052157289563
+      },
+      "ves_small_scale": {
+        "previous_corrected_value": 1.875428749049178e184,
+        "previous_relative_error": 8.430737372661987e-15,
+        "corrected_value": 1.8754287490491935e184,
+        "independent_reference_value": 1.875428749049194e184,
+        "relative_error": 1.6596058076402755e-16,
+        "rms_log10_unchanged": 182.2157866112797
+      }
+    }
+  },
+
+  "representability_semantics": {
+    "finite_mathematically_representable": "returned: ratio 1e303 gives 1.0000000000000000e+305, and the mixed-magnitude cases above return finite values",
+    "mathematically_finite_but_unrepresentable": "inf: ratio 1e308 has the exact value ~1e310, above float_max (1.7976931348623157e+308)",
+    "invalid_input": "ValueError for NaN, +/-inf, zero, negative, empty, or mismatched sequences; never a silent nan",
+    "boundary_rule": "|relative residual| <= sqrt(float_max / n) / 2 for every entry uses the conventional expression (bit-identical to the historical implementation); otherwise the residual-magnitude scaled sum of squares is used, falling back to a log10 form only when the largest residual magnitude itself overflows",
+    "all_three_conditions_remain_distinguishable": true
+  },
+
+  "artifact_impact": {
+    "checked": true,
+    "m22": {
+      "artifact": "docs/m22_scientific_hardening.json",
+      "report_sha256_before": "c05d476c0cf74f5569756ae6466bb5b544829cea809df1ac9e6dc48c5547cf52",
+      "report_sha256_after_regeneration": "c05d476c0cf74f5569756ae6466bb5b544829cea809df1ac9e6dc48c5547cf52",
+      "byte_identical": true,
+      "markdown_byte_identical": true,
+      "regenerated_by": "python tools/generate_m22_qualification.py"
+    },
+    "m21": {
+      "artifact": "docs/m21_scientific_qualification.json",
+      "compared_fields": ["outcome", "initial_objective", "final_objective", "metrics", "manifest_sha256"],
+      "identical": true,
+      "reason": "the curated M21 record stores log-space objectives, comparison metrics, and manifest hashes only; it records no rms_percent, so the correction cannot reach it"
+    },
+    "m19": {
+      "artifact": "docs/m19_release_qualification.json",
+      "identical": true,
+      "reason": "the record stores no percentage-RMS quantity"
+    },
+    "evidence_probe": {
+      "artifact": "docs/m23_evidence/probe_m23_closure.json",
+      "status": "PARTIALLY SUPERSEDED",
+      "superseded_fields": [
+        "defect_open_1_rms_percent_overflow.cases.2d_initial_1e160.corrected_value",
+        "defect_open_1_rms_percent_overflow.cases.2d_initial_1e160.relative_error",
+        "defect_open_1_rms_percent_overflow.cases.2d_initial_1e300.corrected_value",
+        "defect_open_1_rms_percent_overflow.cases.2d_initial_1e300.relative_error",
+        "defect_open_1_rms_percent_overflow.cases.ves_small_scale.corrected_value",
+        "defect_open_1_rms_percent_overflow.cases.ves_small_scale.relative_error",
+        "defect_open_1_rms_percent_overflow.representability_semantics.boundary_rule"
+      ],
+      "reason": "those fields were measured with the superseded log10-ratio algorithm; the previous values are retained in place and re-measured here rather than overwritten",
+      "not_superseded": "the defect reproduction, root cause, pre-fix behaviour, representability verdicts, factorization-classification findings, and artifact_impact block remain accurate"
+    },
+    "conclusion": "No stored qualification result changed. Nothing was superseded at the qualification level, no historical evidence was overwritten, and no artifact hash moved."
+  },
+
+  "efficacy": {
+    "method": "the previous _scaled_percent_rms body (log10-ratio scaling, log10(mean_term)) was restored in place and the new mixed-magnitude tests were re-run against it",
+    "pre_fix_result": "5 failed, 2 passed (8 subtests passed): test_audit_mixed_magnitude_case_matches_its_expected_value, test_mixed_magnitude_public_invert_ert_reports_a_correct_percentage and test_mixed_magnitude_reports_no_arithmetic_warning failed, and the audit case plus the [1e200, 1e-100, 1e-250] case failed inside test_mixed_magnitude_residuals_do_not_erase_the_dominant_contribution with 'ValueError: math domain error'. The two passes are the bit-identical ordinary-range guarantee (unchanged by the defect, which only affects the scaled branch) and the two mixed cases whose ratio exponents happen not to underflow the shared factor.",
+    "corrected_result": "the same selection passes: 83 passed, 99 subtests passed in tests/test_m23_forward_physics_correction.py",
+    "tolerance_unchanged": "the regression tolerance (1e-12 relative against the high-precision reference) was not widened; the corrected implementation meets it with a margin of four orders of magnitude"
+  },
+
+  "tests_added": [
+    "PercentRMSTests.test_ordinary_range_is_bit_identical_to_the_conventional_expression",
+    "PercentRMSTests.test_mixed_magnitude_residuals_do_not_erase_the_dominant_contribution",
+    "PercentRMSTests.test_audit_mixed_magnitude_case_matches_its_expected_value",
+    "PercentRMSTests.test_mixed_magnitude_reports_no_arithmetic_warning",
+    "PercentRMSTests.test_mixed_magnitude_public_invert_ert_reports_a_correct_percentage"
+  ],
+
+  "scope": {
+    "inversion_optimizer": "unchanged",
+    "convergence_criteria": "unchanged",
+    "rms_log10": "unchanged",
+    "forward_models": "unchanged",
+    "m22_physics_corrections": "unchanged",
+    "database_schema": "unchanged",
+    "external_benchmark": "NOT VALIDATED",
+    "abem_barugo_importer_ready": false,
+    "ls2_physical_validation": "PENDING"
+  }
+}

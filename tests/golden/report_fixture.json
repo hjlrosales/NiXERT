@@ -1,0 +1,109 @@
+{
+  "title": "NiX ERT Report — Golden Site & Co — Line 1",
+  "generated_at": "2026-10-27T00:00:00+00:00",
+  "project": {
+    "Project": "Golden Site <A>",
+    "Client": "Acme & Co",
+    "Location": "North field, ünïcode",
+    "Survey date": "2026-10-26",
+    "Operator": "Field crew",
+    "Instrument": "Terrameter LS2 (imported DAT only)",
+    "Software version": "0.1.0",
+    "Provenance": "Current persisted project state"
+  },
+  "surveys": [
+    {
+      "Survey": "Line 1",
+      "Type": "ERT",
+      "Survey ID": "survey-0001",
+      "Measurements": 6,
+      "Sources": 1,
+      "Source datasets": [
+        {
+          "Source": "line.dat",
+          "SHA-256": "824380c85752af5be5d7713c2b31ec3feac179b003098b401cfe9cc37d778ee7",
+          "Bytes": 93,
+          "Stored path": "raw/824380c85752af5b-line.dat"
+        }
+      ],
+      "Coordinate/topography context": "Not supplied"
+    }
+  ],
+  "qc_summary": {
+    "Total measurements": 6,
+    "Active": 6,
+    "Flagged": 0,
+    "Excluded": 0,
+    "Invalid apparent resistivity": 0,
+    "Duplicate tuples": 0,
+    "Minimum apparent resistivity": 90.0,
+    "Maximum apparent resistivity": 120.0,
+    "Median apparent resistivity": 102.5,
+    "Excluded data handling": "Excluded working statuses are retained and counted; raw rows are immutable",
+    "Qualification status": "Baseline workflow report; external benchmark status is not validated"
+  },
+  "inversion": {
+    "Selected version": "2D inversion v1",
+    "Version ID": "version-0001",
+    "Version kind": "inversion",
+    "Parameter hash": "b6c0d0e1f2a3b4c5d6e7f8091827364554637281900aabbccddeeff00112233",
+    "Parent version": "version-0000",
+    "Notes": "Baseline numerical product",
+    "Provenance status": "Current selected version matches persisted source hashes and active measurement keys",
+    "RMS": "3.2%",
+    "Iterations": 1,
+    "State fingerprint": "130f1240f61ee661207de27a5f28e2b509a7deb9d0f42bc214cc5ea982f5a4ec"
+  },
+  "ves_models": [
+    {
+      "Model": "VES 001",
+      "Layers": 3,
+      "RMS": "4.1%",
+      "Interpretation": "Not supplied"
+    }
+  ],
+  "interpretation": [
+    {
+      "Zone": "Possible target",
+      "Distance (m)": "120–165",
+      "Depth (m)": "8–20",
+      "Resistivity (ohm.m)": "12–35",
+      "Confidence": "Low; user supplied"
+    }
+  ],
+  "conclusions": [
+    {
+      "Statement": "The baseline model is internally consistent with the imported measurements.",
+      "Certainty": "Not a geological conclusion"
+    }
+  ],
+  "recommendations": [
+    {
+      "Action": "Repeat field QC before any geological interpretation.",
+      "Owner": "Operator"
+    }
+  ],
+  "limitations": [
+    "Pseudosection depth is a display proxy, not inversion depth.",
+    "2D/3D models are baseline numerical products; they do not establish geological certainty.",
+    "External benchmark comparison remains NOT VALIDATED; RES2DINV equivalence is not claimed.",
+    "Direct Terrameter LS2 hardware communication remains blocked pending official protocol documentation and validated fixtures."
+  ],
+  "provenance": {
+    "Software": "NiX ERT 0.1.0",
+    "Survey ID": "survey-0001",
+    "Selected version": "2D inversion v1",
+    "Selected version ID": "version-0001",
+    "Version parameter hash": "b6c0d0e1f2a3b4c5d6e7f8091827364554637281900aabbccddeeff00112233",
+    "Source SHA-256": [
+      "824380c85752af5be5d7713c2b31ec3feac179b003098b401cfe9cc37d778ee7"
+    ],
+    "State fingerprint": "130f1240f61ee661207de27a5f28e2b509a7deb9d0f42bc214cc5ea982f5a4ec",
+    "Qualification scope": "Supported offline workflow; external benchmark NOT VALIDATED; RES2DINV equivalence not claimed",
+    "Raw data handling": "Raw source bytes are preserved; report generation never modifies them"
+  },
+  "pseudosection_csv": "index,distance,pseudo_depth,apparent_resistivity\n1,0.0,0.5,100.0\n2,2.0,0.75,120.0\n",
+  "appendices": [
+    "{\"source_datasets\": [{\"Source\": \"line.dat\"}], \"generated_from_survey\": \"survey-0001\"}"
+  ]
+}

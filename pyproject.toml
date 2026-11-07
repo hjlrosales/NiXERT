@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nix-ert"
+version = "0.1.0"
+description = "Scientifically transparent electrical resistivity tomography software"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{name = "NiX ERT contributors"}]
+dependencies = [
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "scipy>=1.10",
+    "PySide6>=6.5",
+]
+
+[project.optional-dependencies]
+visualization = ["matplotlib>=3.7"]
+test = ["pytest>=7.4"]
+
+[project.scripts]
+nix-ert = "nix_ert.app.main:main"
+
+[tool.setuptools.packages.find]
+include = ["nix_ert*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

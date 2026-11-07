@@ -1,0 +1,63 @@
+{
+  "assessment": "QUALIFIED_FOR_SUPPORTED_OFFLINE_WORKFLOW",
+  "blocked_capabilities": [
+    "ABEM Barugo importer",
+    "physical Terrameter LS2 communication",
+    "independent field/reference benchmark",
+    "medium/large/stress-scale performance qualification"
+  ],
+  "cancellation_and_failure": {
+    "cancelled_without_partial_commit": true,
+    "invalid_input_rejected_without_measurements": true,
+    "last_valid_model_preserved": true,
+    "stale_model_detected_after_working_state_change": true
+  },
+  "environment": {
+    "machine": "AMD64",
+    "niX_ert_version": "0.1.0",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "processor": "Intel64 Family 6 Model 198 Stepping 2, GenuineIntel",
+    "python": "3.11.9"
+  },
+  "limitations": [
+    "Internal synthetic fixtures are not independent field or commercial benchmarks.",
+    "Native allocations are not included in tracemalloc measurements.",
+    "Topography-aware inversion, uncertainty/resolution analysis, advanced true 3D inversion, IP inversion, GPU acceleration, and automatic geological classification remain unqualified.",
+    "No geological certainty or production-grade geological inversion claim is made."
+  ],
+  "performance": [
+    {"name": "workflow-import", "seconds": 0.005806, "peak_python_bytes": 44707, "metadata": {"scale": "small", "source_bytes": 83}},
+    {"name": "workflow-qc", "seconds": 0.000575, "peak_python_bytes": 13332, "metadata": {"scale": "small", "observations": 6}},
+    {"name": "workflow-processing", "seconds": 0.002614, "peak_python_bytes": 17446, "metadata": {"scale": "small", "observations": 6}},
+    {"name": "workflow-inversion-1-iteration", "seconds": 0.228566, "peak_python_bytes": 174315, "metadata": {"scale": "small", "observations": 6, "mesh_cells": 18}},
+    {"name": "workflow-report-html", "seconds": 0.005072, "peak_python_bytes": 78640, "metadata": {"scale": "small", "observations": 6}},
+    {"name": "ves-forward-8-observations", "seconds": 0.075494, "peak_python_bytes": 17608, "metadata": {"scale": "small", "observations": 8}},
+    {"name": "ves-inversion-20-evaluations", "seconds": 14.911569, "peak_python_bytes": 54243, "metadata": {"scale": "small", "observations": 8}},
+    {"name": "ert-2d-forward-6-observations", "seconds": 0.005565, "peak_python_bytes": 29979, "metadata": {"scale": "small", "observations": 6, "mesh_cells": 18}},
+    {"name": "ert-2d-inversion-1-iteration", "seconds": 0.218245, "peak_python_bytes": 138034, "metadata": {"scale": "small", "observations": 6, "mesh_cells": 18}},
+    {"name": "ert-3d-forward-2-observations", "seconds": 0.010745, "peak_python_bytes": 31699, "metadata": {"scale": "small", "observations": 2, "mesh_cells": 16}},
+    {"name": "ert-3d-inversion-1-iteration", "seconds": 0.337185, "peak_python_bytes": 123389, "metadata": {"scale": "small", "observations": 2, "mesh_cells": 16}}
+  ],
+  "procedure_version": "m19-release-qualification-v1",
+  "qualification_datasets": [
+    {"dataset_id": "internal-dat-lifecycle-v1", "classification": "internal synthetic", "source_sha256": "9bbd89666b8d061fd5cd99926d6394664cc7961d04d7a181569da88541df4c98"},
+    {"dataset_id": "ves-layered-internal-v1", "classification": "internal synthetic", "source_sha256": null},
+    {"dataset_id": "ert-2d-anomaly-internal-v1", "classification": "internal synthetic", "source_sha256": null},
+    {"dataset_id": "ert-3d-anomaly-internal-v1", "classification": "internal synthetic", "source_sha256": null}
+  ],
+  "reproducibility": {
+    "comparison": "Structured ReportData excluding generated timestamp and output path",
+    "project_import_qc_processing_inversion_report_reopen": true,
+    "equivalent_report_state_fingerprint": true,
+    "source_hash_stable": true
+  },
+  "source_hashes": {
+    "barugo_ert": "057674127c923842510ee5e8af6082fed88ef152438f3752ca681d5f2f6d47af",
+    "barugo_ves": "97eec29b3f9870092f9674e54b560df20f9df2130ac18778ff29161757d09e51",
+    "internal_dat_lifecycle": "9bbd89666b8d061fd5cd99926d6394664cc7961d04d7a181569da88541df4c98"
+  },
+  "test_counts": {
+    "m19_focused": 5,
+    "full_suite": 128
+  }
+}

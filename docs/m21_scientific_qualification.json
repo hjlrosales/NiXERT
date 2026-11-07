@@ -1,0 +1,174 @@
+{
+  "procedure_version": "m21-scientific-qualification-v1",
+  "environment": {
+    "python": "3.11.9",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "machine": "AMD64",
+    "software_version": "0.1.0"
+  },
+  "evidence_policy": {
+    "internal_synthetic": "QUALITATIVELY CONSISTENT",
+    "external_reference": "NOT VALIDATED"
+  },
+  "provenance": {
+    "produced_by": "m21-scientific-qualification-v1",
+    "last_corrected_by": "m23-forward-physics-correction-v1",
+    "correction_scope": "A1 layered VES forward kernel (scientific), A2/A3 finite-volume face transmissibility (rounding level for uniform meshes)",
+    "historical_values_retained_in": "corrections",
+    "artifact_is_curated": "This file is the curated M21 evidence record. It is not a byte-for-byte dump of M21QualificationReport.to_json(), which nests manifest/convergence blocks.",
+    "closure_verification": "The M23 closure increment (C1 percentage-RMS numeric domain, C2 forward-factorization failure phase) was verified against this file: outcome, initial_objective, final_objective, metrics and manifest hashes are identical to a fresh run. This record stores no rms_percent and no failure phase, so neither correction can reach it. See docs/m23_evidence/probe_m23_closure.json."
+  },
+  "records": [
+    {
+      "manifest_id": "m21-ves-internal-v1",
+      "manifest_sha256": "9f468a9d67cc51dcfe6ecdf500d979676f8392ad981d09ceaf4277c80b7ffe82",
+      "dataset_id": "ves-layered-internal-v1",
+      "domain": "VES",
+      "outcome": "CONVERGED",
+      "final_objective": 0.011501149486299902,
+      "termination_reason": "`ftol` termination condition is satisfied.",
+      "evaluation_count": 13,
+      "metrics": {
+        "rmse": 2.0628349182816037,
+        "relative_rmse": 0.02659944212819373,
+        "max_absolute_difference": 4.224049606798133,
+        "log10_rmse": 0.011501149486299897
+      }
+    },
+    {
+      "manifest_id": "m21-ert2d-internal-v1",
+      "manifest_sha256": "6745eda96850f3b0ff424871614597d0f939da1a72dc3aeb0362946d0febe010",
+      "dataset_id": "ert-2d-anomaly-internal-v1",
+      "domain": "2D ERT",
+      "outcome": "TERMINATED",
+      "initial_objective": 0.17264464867512536,
+      "final_objective": 0.026041052250243564,
+      "metrics": {
+        "rmse": 0.09253556327104338,
+        "relative_rmse": 0.05761769169762031,
+        "log10_rmse": 0.026041052250243564
+      },
+      "sensitivity_studies": [
+        "m21-ert2d-starting-model-v1",
+        "m21-ert2d-mesh-v1",
+        "m21-ert2d-damping-v1",
+        "m21-ert2d-stopping-v1",
+        "m21-ert2d-noise-v1"
+      ]
+    },
+    {
+      "manifest_id": "m21-ert3d-internal-v1",
+      "manifest_sha256": "d765d6d95143b89c197c81e71daecbb5bf8524469b8db97cedad63edfd8cf918",
+      "dataset_id": "ert-3d-anomaly-internal-v1",
+      "domain": "3D ERT",
+      "outcome": "TERMINATED",
+      "initial_objective": 0.2021335923930331,
+      "final_objective": 0.14952966792891706,
+      "metrics": {
+        "rmse": 0.4656096416711649,
+        "relative_rmse": 0.2906574319151113,
+        "log10_rmse": 0.14952966792891706
+      }
+    }
+  ],
+  "corrections": [
+    {
+      "record": "m21-ert3d-internal-v1",
+      "field": "final_objective",
+      "previous_value": 0.2021335923930331,
+      "corrected_value": 0.14952966792891706,
+      "reason": "M22 corrected the 3D ERT reporting defect: the engine returned an objective history and convergence flag describing the pre-update model rather than the returned model, so the recorded final objective wrongly equalled the initial objective and hid a measured objective reduction. Manifest hashes, metrics, and all vector and VES records are unchanged.",
+      "corrected_by": "m22-inversion-hardening-v1",
+      "regression_coverage": "tests/test_m22_hardening.py::M22EngineReportingRegressionTests"
+    },
+    {
+      "record": "m21-ves-internal-v1",
+      "field": "outcome",
+      "previous_value": "TERMINATED",
+      "corrected_value": "CONVERGED",
+      "reason": "M23 corrected the layered VES forward-model kernel (A1). The previous correction integral carried a spurious 1/r factor, which mis-scaled every layered response and left the fit truncated at max_nfev. With the corrected kernel the same bounded fit satisfies the scipy termination criteria at 13 function evaluations. This is a change of the scientific forward model, not of the optimizer, tolerance, or fixture.",
+      "corrected_by": "m23-forward-physics-correction-v1",
+      "regression_coverage": "tests/test_m23_forward_physics_correction.py::VESLayeredKernelTests"
+    },
+    {
+      "record": "m21-ves-internal-v1",
+      "field": "final_objective",
+      "previous_value": 0.011580412898065794,
+      "corrected_value": 0.011501149486299902,
+      "reason": "Same A1 kernel correction: the apparent-resistivity responses, and therefore the log-space residual of the returned layered model, changed. The new value is measured against the unchanged internal fixture and noisy observations.",
+      "corrected_by": "m23-forward-physics-correction-v1",
+      "regression_coverage": "tests/test_m23_forward_physics_correction.py::VESLayeredKernelTests"
+    },
+    {
+      "record": "m21-ves-internal-v1",
+      "field": "metrics",
+      "previous_value": {
+        "rmse": 2.6470803375591765,
+        "relative_rmse": 0.02677510040256823,
+        "log10_rmse": 0.011580412898065783
+      },
+      "corrected_value": {
+        "rmse": 2.0628349182816037,
+        "relative_rmse": 0.02659944212819373,
+        "max_absolute_difference": 4.224049606798133,
+        "log10_rmse": 0.011501149486299897
+      },
+      "reason": "Same A1 kernel correction. The absolute rmse decreased because the corrected three-layer responses have a smaller absolute spread across the Schlumberger spacings; relative and log10 metrics stay of the same order. No threshold is asserted by any of these metrics.",
+      "corrected_by": "m23-forward-physics-correction-v1",
+      "regression_coverage": "tests/test_m23_forward_physics_correction.py::VESLayeredKernelTests"
+    },
+    {
+      "record": "m21-ert2d-internal-v1",
+      "field": "metrics",
+      "previous_value": {
+        "rmse": 0.092535563271023,
+        "relative_rmse": 0.05761769169760862,
+        "log10_rmse": 0.026041052250238096
+      },
+      "corrected_value": {
+        "rmse": 0.09253556327104338,
+        "relative_rmse": 0.05761769169762031,
+        "log10_rmse": 0.026041052250243564
+      },
+      "reason": "M23 replaced the face transmissibility with the exact series-resistance form (A3). For an equal-width mesh the two forms are algebraically identical but not bit-identical, so these values differ at floating-point rounding level (relative change below 1e-13). No discretization, fixture, or optimizer behavior changed.",
+      "corrected_by": "m23-forward-physics-correction-v1",
+      "regression_coverage": "tests/test_m23_forward_physics_correction.py::InterfaceTransmissibilityTests"
+    },
+    {
+      "record": "m21-ert3d-internal-v1",
+      "field": "metrics",
+      "previous_value": {
+        "rmse": 0.46560964167116536,
+        "relative_rmse": 0.2906574319151116,
+        "log10_rmse": 0.14952966792891723
+      },
+      "corrected_value": {
+        "rmse": 0.4656096416711649,
+        "relative_rmse": 0.2906574319151113,
+        "log10_rmse": 0.14952966792891706
+      },
+      "reason": "Same A2/A3 assembly rewrite at rounding level: the uniform 3D fixture mesh has no unequal-width faces, so only floating-point association changed (relative change below 1e-15). Nonuniform meshes, which were affected scientifically, are covered by the M23 regression tests.",
+      "corrected_by": "m23-forward-physics-correction-v1",
+      "regression_coverage": "tests/test_m23_forward_physics_correction.py::InterfaceTransmissibilityTests"
+    }
+  ],
+  "external_benchmark": {
+    "benchmark_id": "m21-external-reference-gate",
+    "dataset_id": "no-authorized-reference-dataset",
+    "status": "NOT VALIDATED",
+    "reason": "No legally usable independent dataset with trustworthy expected results is available in the repository.",
+    "required_evidence": [
+      "licensed dataset bytes",
+      "known acquisition/geometry metadata",
+      "trustworthy reference result",
+      "frozen comparison protocol"
+    ]
+  },
+  "limitations": [
+    "Internal synthetic evidence is not an independent benchmark.",
+    "Residual and convergence behavior do not establish geological certainty or uniqueness.",
+    "Topography-aware inversion and uncertainty/resolution analysis are not implemented.",
+    "M15 physical LS2 validation remains pending and the ABEM importer remains NOT_READY.",
+    "The M23 corrections changed VES forward-model values; only the corrected values above are current."
+  ]
+}

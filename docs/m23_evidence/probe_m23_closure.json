@@ -1,0 +1,131 @@
+{
+ "procedure": "m23-forward-physics-correction-v1",
+ "increment": "M23 closure of the two remaining open code defects found by the post-M23 independent audit",
+ "note": "Measured on the corrected implementation. 'pre_correction_value' entries are the audited pre-correction behaviour; they are recorded as measured and were not re-measured from the corrected code, except for '2d_160' / '2d_300' / 'ves_small_scale', where the conventional expression is evaluated directly from the same inputs and is labelled 'conventional_expression_value'.",
+ "superseded_by": {
+  "artifact": "docs/m23_evidence/probe_m23_c1_mixed_magnitude.json",
+  "date": "2026-09-16",
+  "reason": "The percentage-RMS implementation in nix_ert/core/numerics.py was corrected again: the scaled branch had selected the scale as max(abs(log10(predicted/observed))), which underflowed every contribution for mixed residual magnitudes and rejected a finite, representable percentage with 'ValueError: math domain error'. The new scale is the largest residual magnitude.",
+  "superseded_fields": [
+   "defect_open_1_rms_percent_overflow.cases.2d_initial_1e160.corrected_value",
+   "defect_open_1_rms_percent_overflow.cases.2d_initial_1e160.relative_error",
+   "defect_open_1_rms_percent_overflow.cases.2d_initial_1e300.corrected_value",
+   "defect_open_1_rms_percent_overflow.cases.2d_initial_1e300.relative_error",
+   "defect_open_1_rms_percent_overflow.cases.ves_small_scale.corrected_value",
+   "defect_open_1_rms_percent_overflow.cases.ves_small_scale.relative_error",
+   "defect_open_1_rms_percent_overflow.representability_semantics.boundary_rule"
+  ],
+  "retained": "Those fields are preserved here exactly as measured; they are re-measured (not overwritten) in the superseding evidence file. The defect reproduction, root cause, pre-fix behaviour, representability verdicts, factorization classification, and artifact_impact block of this file remain accurate."
+ },
+ "artifact_impact": {
+  "checked": true,
+  "m22": {
+   "artifact": "docs/m22_scientific_hardening.json",
+   "report_sha256_before": "c05d476c0cf74f5569756ae6466bb5b544829cea809df1ac9e6dc48c5547cf52",
+   "report_sha256_after_regeneration": "c05d476c0cf74f5569756ae6466bb5b544829cea809df1ac9e6dc48c5547cf52",
+   "byte_identical": true,
+   "markdown_byte_identical": true,
+   "regenerated_by": "python tools/generate_m22_qualification.py"
+  },
+  "m21": {
+   "artifact": "docs/m21_scientific_qualification.json",
+   "compared_fields": ["outcome", "initial_objective", "final_objective", "metrics", "manifest_sha256"],
+   "identical": true,
+   "reason": "The curated M21 record stores log-space objectives, comparison metrics, and manifest hashes only. It records no rms_percent and no failure phase, so neither closure correction can reach it."
+  },
+  "conclusion": "No qualification artifact changed. Nothing was superseded, and no historical evidence was overwritten."
+ },
+ "defect_open_1_rms_percent_overflow": {
+  "reproduction": "python -X utf8 -c \"from nix_ert.ert.inversion2d import invert_ert; from nix_ert.qualification.datasets import ert2d_qualification; f = ert2d_qualification(); print(invert_ert(f.observations, f.mesh, 1e300, max_iterations=1).rms_percent)\"",
+  "root_cause": "The metric squares each relative residual, so a representable percentage overflows to inf once one relative residual exceeds sqrt(float_max) ~ 1.34e154. Resistance/apparent-resistivity inputs are validated only as finite and positive and an initial model may be extreme, so the range is reachable through the public API. The same defect is reachable in the VES engine (its ratio is a numpy float64 scalar, so it reported inf with a RuntimeWarning rather than raising).",
+  "cases": {
+   "2d_initial_1e160": {
+    "domain": "2D ERT, public invert_ert, accepted finite initial model 1e160",
+    "conventional_expression_value": Infinity,
+    "conventional_expression_overflow_warnings": 3,
+    "corrected_value": 2.1579671983284469e+161,
+    "independent_reference_value": 2.15796719832854548435216740266270351108908450565192518149691E+161,
+    "reference_method": "60-digit decimal evaluation of sqrt(mean(((predicted/observed) - 1)**2)) * 100 from the same result vectors",
+    "relative_error": 4.5683897440035798e-14,
+    "rms_log10_unchanged": 159.33052384222248
+   },
+   "2d_initial_1e300": {
+    "domain": "2D ERT, public invert_ert, accepted finite initial model 1e300",
+    "conventional_expression_value": Infinity,
+    "conventional_expression_overflow_warnings": 3,
+    "corrected_value": 2.1579671983287294e+301,
+    "independent_reference_value": 2.15796719832854483353417994412191727638541135353020938768635E+301,
+    "relative_error": 8.5527929230347884e-14,
+    "rms_log10_unchanged": 299.33052157289563
+   },
+   "ves_small_scale": {
+    "domain": "VES, public invert_ves, the qualification sounding scaled by 1e-190 (accepted finite positive apparent resistivities)",
+    "conventional_expression_value": Infinity,
+    "conventional_expression_overflow_warnings": 1,
+    "corrected_value": 1.875428749049178e+184,
+    "independent_reference_value": 1.87542874904919381124724437375786546396185572006577139308965E+184,
+    "relative_error": 8.4307373726619874e-15,
+    "rms_log10_unchanged": 182.2157866112797
+   }
+  },
+  "representability_semantics": {
+   "finite_mathematically_representable": "returned: ratio 1e303 gives 1.0000000000000000e+305",
+   "mathematically_finite_but_unrepresentable": "inf: ratio 1e308 has the exact value ~1e310, above float_max (1.7976931348623157e+308)",
+   "invalid_input": "ValueError for NaN, +/-inf, zero, negative, empty, or mismatched sequences; never a silent nan",
+   "boundary_rule": "3.5e-308 < ratio < 1.3e154 uses the conventional expression (bit-identical to the historical implementation); outside it the same quantity is evaluated with the residual magnitude factored out in log10 space"
+  },
+  "ordinary_scale_equivalence": {
+   "verified": true,
+   "method": "the direct branch is retained for every value range in which it cannot overflow, so all recorded M22 values regenerated byte-identically (see artifact_impact)"
+  }
+ },
+ "defect_open_2_forward_factorization_classification": {
+  "reproduction": "python -X utf8 -c \"from nix_ert.ert.inversion2d import invert_ert; from nix_ert.qualification.datasets import ert2d_qualification; f = ert2d_qualification(); invert_ert(f.observations, f.mesh, 1e-308, max_iterations=1)\"",
+  "root_cause": "scipy's SuperLU binding reports an exactly singular matrix as a bare RuntimeError, but the forward-model boundary caught only numpy.linalg.LinAlgError. The RuntimeError escaped to the qualification runner's generic handler, which recorded a numerical failure in the solver_update phase even though no model update had been attempted.",
+  "pre_correction_classification": {
+   "source": "the runner's generic handler for a bare RuntimeError raised during the first forward evaluation",
+   "outcome": "FAILED",
+   "failure_phase": "solver_update",
+   "error_class": "RuntimeError"
+  },
+  "corrected_classification": {
+   "2d": {
+    "outcome": "FAILED",
+    "failure_phase": "forward_factorization",
+    "error_class": "ERT2DNumericalError",
+    "error": "forward system factorization failed",
+    "numerical_failure": true,
+    "invalid_input": false,
+    "final_model_status": "NOT_PRODUCED",
+    "cause_preserved": "RuntimeError('Factor is exactly singular') on __cause__"
+   },
+   "3d": {
+    "outcome": "FAILED",
+    "failure_phase": "forward_factorization",
+    "error_class": "ERT3DNumericalError",
+    "error": "forward system factorization failed",
+    "numerical_failure": true,
+    "invalid_input": false,
+    "final_model_status": "NOT_PRODUCED",
+    "cause_preserved": "RuntimeError('Factor is exactly singular') on __cause__"
+   }
+  },
+  "boundary": "The try block wraps only the factorized() calls. A RuntimeError raised by the mesh/matrix assembly is not relabelled (verified by a test that patches _system_matrix). Only the known, validated factorization failure condition is converted.",
+  "phase_vocabulary": {
+   "forward_factorization": "the accepted forward system could not be factorized",
+   "forward_model_evaluation": "any other forward-model numerical failure",
+   "solver_update": "a regularized model-update numerical failure",
+   "input_validation": "invalid input rejected before evaluation",
+   "note": "the phases stay distinct so a factorization failure can never be reported as a model update that never happened"
+  },
+  "held_out_observation": {
+   "unfixed": "the extreme accepted model 1e-308 makes the transmissibility overflow to inf (IEEE overflow/divide-by-zero RuntimeWarnings from face_conductance) before the factorization fails",
+   "assessment": "not a defect of this correction: the resulting matrix is genuinely unfactorizable and the failure is now classified correctly and reported rather than silently accepted. The warnings are the honest IEEE outcome for a conductivity outside the double range."
+  }
+ },
+ "efficacy": {
+  "method": "each correction was reverted in place and the new tests re-run",
+  "engine_reverted": "7 of the 20 closure tests failed: PercentRMSTests.test_extreme_finite_initial_models_report_a_representable_percentage (both subcases) and test_extreme_scale_makes_no_arithmetic_overflow_warning, plus ForwardFactorizationFailureTests.test_2d_factorization_failure_raises_the_dedicated_numerical_error, test_2d_qualification_record_is_failed_not_invalid_input_nor_solver_update, test_no_unstable_implementation_detail_is_exposed, and test_only_the_factorization_call_is_converted",
+  "ves_rms_reverted": "tests/test_m23_forward_physics_correction.py::PercentRMSTests::test_very_small_observed_values_stay_representable failed on its own"
+ }
+}

@@ -1,0 +1,69 @@
+section,record,item,value
+Project information,,Project,Golden Site <A>
+Project information,,Client,Acme & Co
+Project information,,Location,"North field, ünïcode"
+Project information,,Survey date,2026-10-26
+Project information,,Operator,Field crew
+Project information,,Instrument,Terrameter LS2 (imported DAT only)
+Project information,,Software version,0.1.0
+Project information,,Provenance,Current persisted project state
+Survey methodology and organization,1,Survey,Line 1
+Survey methodology and organization,1,Type,ERT
+Survey methodology and organization,1,Survey ID,survey-0001
+Survey methodology and organization,1,Measurements,6
+Survey methodology and organization,1,Sources,1
+Survey methodology and organization,1,Source datasets,"[{""Bytes"": 93, ""SHA-256"": ""824380c85752af5be5d7713c2b31ec3feac179b003098b401cfe9cc37d778ee7"", ""Source"": ""line.dat"", ""Stored path"": ""raw/824380c85752af5b-line.dat""}]"
+Survey methodology and organization,1,Coordinate/topography context,Not supplied
+Data quality control summary,,Total measurements,6
+Data quality control summary,,Active,6
+Data quality control summary,,Flagged,0
+Data quality control summary,,Excluded,0
+Data quality control summary,,Invalid apparent resistivity,0
+Data quality control summary,,Duplicate tuples,0
+Data quality control summary,,Minimum apparent resistivity,90.0
+Data quality control summary,,Maximum apparent resistivity,120.0
+Data quality control summary,,Median apparent resistivity,102.5
+Data quality control summary,,Excluded data handling,Excluded working statuses are retained and counted; raw rows are immutable
+Data quality control summary,,Qualification status,Baseline workflow report; external benchmark status is not validated
+Inversion parameters and convergence,,Selected version,2D inversion v1
+Inversion parameters and convergence,,Version ID,version-0001
+Inversion parameters and convergence,,Version kind,inversion
+Inversion parameters and convergence,,Parameter hash,b6c0d0e1f2a3b4c5d6e7f8091827364554637281900aabbccddeeff00112233
+Inversion parameters and convergence,,Parent version,version-0000
+Inversion parameters and convergence,,Notes,Baseline numerical product
+Inversion parameters and convergence,,Provenance status,Current selected version matches persisted source hashes and active measurement keys
+Inversion parameters and convergence,,RMS,3.2%
+Inversion parameters and convergence,,Iterations,1
+Inversion parameters and convergence,,State fingerprint,130f1240f61ee661207de27a5f28e2b509a7deb9d0f42bc214cc5ea982f5a4ec
+VES models,1,Model,VES 001
+VES models,1,Layers,3
+VES models,1,RMS,4.1%
+VES models,1,Interpretation,Not supplied
+Interpretation,1,Zone,Possible target
+Interpretation,1,Distance (m),120–165
+Interpretation,1,Depth (m),8–20
+Interpretation,1,Resistivity (ohm.m),12–35
+Interpretation,1,Confidence,Low; user supplied
+Conclusions,1,Statement,The baseline model is internally consistent with the imported measurements.
+Conclusions,1,Certainty,Not a geological conclusion
+Recommendations,1,Action,Repeat field QC before any geological interpretation.
+Recommendations,1,Owner,Operator
+Limitations and scientific scope,1,,"Pseudosection depth is a display proxy, not inversion depth."
+Limitations and scientific scope,2,,2D/3D models are baseline numerical products; they do not establish geological certainty.
+Limitations and scientific scope,3,,External benchmark comparison remains NOT VALIDATED; RES2DINV equivalence is not claimed.
+Limitations and scientific scope,4,,Direct Terrameter LS2 hardware communication remains blocked pending official protocol documentation and validated fixtures.
+Provenance and report identity,,Software,NiX ERT 0.1.0
+Provenance and report identity,,Survey ID,survey-0001
+Provenance and report identity,,Selected version,2D inversion v1
+Provenance and report identity,,Selected version ID,version-0001
+Provenance and report identity,,Version parameter hash,b6c0d0e1f2a3b4c5d6e7f8091827364554637281900aabbccddeeff00112233
+Provenance and report identity,,Source SHA-256,"[""824380c85752af5be5d7713c2b31ec3feac179b003098b401cfe9cc37d778ee7""]"
+Provenance and report identity,,State fingerprint,130f1240f61ee661207de27a5f28e2b509a7deb9d0f42bc214cc5ea982f5a4ec
+Provenance and report identity,,Qualification scope,Supported offline workflow; external benchmark NOT VALIDATED; RES2DINV equivalence not claimed
+Provenance and report identity,,Raw data handling,Raw source bytes are preserved; report generation never modifies them
+Pseudosection data appendix,,csv,"index,distance,pseudo_depth,apparent_resistivity
+1,0.0,0.5,100.0
+2,2.0,0.75,120.0
+"
+Appendices,1,,"{""source_datasets"": [{""Source"": ""line.dat""}], ""generated_from_survey"": ""survey-0001""}"
+Report identity,,content_sha256,789db33849ab79885efd962b2b9b957c244d247ac8ae2eae48fa7af8e5afa550

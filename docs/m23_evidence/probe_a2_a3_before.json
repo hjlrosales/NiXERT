@@ -1,0 +1,19 @@
+{
+ "A3_2d": {
+  "assembled": 0.26666666666666666,
+  "series_resistance_reference": 0.2222222222222222,
+  "rel_error": 0.20000000000000004
+ },
+ "A3_1d_areal": 0.2222222222222222,
+ "A2": {
+  "cell_count": 16,
+  "max_abs_asymmetry": 1.6369048133674111,
+  "max_abs_rowsum_unaugmented": 8.881784197001252e-16,
+  "offdiag_confirmed_pairs": 28,
+  "reciprocity": {
+   "R_AB_MN": 0.0,
+   "R_MN_AB": 0.0,
+   "rel_diff": NaN
+  }
+ }
+}
